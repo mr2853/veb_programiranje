@@ -14,7 +14,9 @@ export default {
     template: `
     <form v-on:submit.prevent="$emit('sacuvaj', {...noviObjekat})">
         <div v-for="atr in atributi">
-            <label>{{atr}}: <input type="text" v-model="noviObjekat.atr" required></label>
+            <template>
+                <label>{{atr}}: <input type="text" v-model="noviObjekat[atr]" required></label>
+            </template>
         </div>
         <div>
             <input type="submit" v-bind:value="tekst">
