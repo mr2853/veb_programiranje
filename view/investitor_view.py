@@ -14,7 +14,20 @@ def get_all_investitor_view():
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM investitor_view")
     investitor_view = cursor.fetchall()
-    return flask.jsonify(investitor_view)
+
+    cursor.execute("SELECT * FROM drzava_view")
+    drzave = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM opstina_view")
+    opstine = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM mesto_view")
+    mesta = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM adresa_view")
+    adrese = cursor.fetchall()
+
+    return {1: investitor_view, 2: drzave, 3: opstine, 4: mesta, 5: adrese}
 
 def get_investitor_view(idinvestitor):
     cursor = mysql.get_db().cursor()
@@ -27,7 +40,7 @@ def get_investitor_view(idinvestitor):
 def dodavanje_investitor_view():
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("INSERT INTO investitor_view(ime, prezime, jmbg, broj_mobilnog, email, idadresa) VALUES (%(ime)s, %(prezime)s, %(jmbg)s, %(broj_mobilnog)s, %(email)s, %(idadresa)s)", flask.request.json)
+    cursor.execute("INSERT INTO investitor(ime, prezime, jmbg, broj_mobilnog, email, idadresa) VALUES (%(ime)s, %(prezime)s, %(jmbg)s, %(broj_mobilnog)s, %(email)s, %(idadresa)s)", flask.request.json)
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
@@ -36,7 +49,7 @@ def izmeni_investitor_view(idinvestitor):
     investitor_view["idinvestitor"] = idinvestitor
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("UPDATE investitor_view SET ime=%(ime)s, prezime=%(prezime)s, jmbg=%(jmbg)s, broj_mobilnog=%(broj_mobilnog)s, email=%(email)s, idadresa=%(idadresa)s WHERE idinvestitor=%(idinvestitor)s", investitor_view)
+    cursor.execute("UPDATE investitor SET ime=%(ime)s, prezime=%(prezime)s, jmbg=%(jmbg)s, broj_mobilnog=%(broj_mobilnog)s, email=%(email)s, idadresa=%(idadresa)s WHERE idinvestitor=%(idinvestitor)s", investitor_view)
     db.commit()
     cursor.execute("SELECT * FROM investitor_view WHERE idinvestitor=%s", (idinvestitor, ))
     investitor_view = cursor.fetchone()
@@ -45,7 +58,7 @@ def izmeni_investitor_view(idinvestitor):
 def ukloni_investitor_view(idinvestitor):
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("DELETE FROM investitor_view WHERE idinvestitor=%s", (idinvestitor, ))
+    cursor.execute("DELETE FROM investitor WHERE idinvestitor=%s", (idinvestitor, ))
     db.commit()
     return ""
 

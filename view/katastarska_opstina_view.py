@@ -14,7 +14,14 @@ def get_all_katastarska_opstina_view():
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM katastarska_opstina_view")
     katastarska_opstina_view = cursor.fetchall()
-    return flask.jsonify(katastarska_opstina_view)
+
+    cursor.execute("SELECT * FROM drzava_view")
+    drzave = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM opstina_view")
+    opstine = cursor.fetchall()
+
+    return {1: katastarska_opstina_view, 2: drzave, 3: opstine}
 
 def get_katastarska_opstina_view(idkatastarska_opstina):
     cursor = mysql.get_db().cursor()
@@ -27,7 +34,7 @@ def get_katastarska_opstina_view(idkatastarska_opstina):
 def dodavanje_katastarska_opstina_view():
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("INSERT INTO katastarska_opstina_view(katastarska_opstina, idopstina) VALUES (%(katastarska_opstina)s, %(idopstina)s)", flask.request.json)
+    cursor.execute("INSERT INTO katastarska_opstina(katastarska_opstina, idopstina) VALUES (%(katastarska_opstina)s, %(idopstina)s)", flask.request.json)
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
@@ -36,7 +43,7 @@ def izmeni_katastarska_opstina_view(idkatastarska_opstina):
     katastarska_opstina_view["idkatastarska_opstina"] = idkatastarska_opstina
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("UPDATE katastarska_opstina_view SET katastarska_opstina=%(katastarska_opstina)s, idopstina=%(idopstina)s WHERE idkatastarska_opstina=%(idkatastarska_opstina)s", katastarska_opstina_view)
+    cursor.execute("UPDATE katastarska_opstina SET katastarska_opstina=%(katastarska_opstina)s, idopstina=%(idopstina)s WHERE idkatastarska_opstina=%(idkatastarska_opstina)s", katastarska_opstina_view)
     db.commit()
     cursor.execute("SELECT * FROM katastarska_opstina_view WHERE idkatastarska_opstina=%s", (idkatastarska_opstina, ))
     katastarska_opstina_view = cursor.fetchone()
@@ -45,7 +52,7 @@ def izmeni_katastarska_opstina_view(idkatastarska_opstina):
 def ukloni_katastarska_opstina_view(idkatastarska_opstina):
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("DELETE FROM katastarska_opstina_view WHERE idkatastarska_opstina=%s", (idkatastarska_opstina, ))
+    cursor.execute("DELETE FROM katastarska_opstina WHERE idkatastarska_opstina=%s", (idkatastarska_opstina, ))
     db.commit()
     return ""
 

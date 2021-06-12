@@ -2,14 +2,17 @@ export default {
     props: ["naziv", "atributi"],
     template: `
 <div>
-    <forma v-on:sacuvaj="create" v-bind:atributi="atributi" v-bind:tekst="'Dodaj'"></forma>
-    <forma v-bind:objekat="objekatZaIzmenu" v-bind:atributi="atributi" v-bind:tekst="'Izmeni'" v-on:sacuvaj="update"></forma>
-    <tabela v-bind:objekti="objekti" v-bind:atributi="atributi" v-on:uklanjanje="remove" v-on:izmena="setObjekatZaIzmenu"></tabela>
+    <forma-adresa v-on:sacuvaj="create" v-bind:drzave="drzave" v-bind:opstine="opstine" v-bind:mesta="mesta" v-bind:atributi="atributi" v-bind:tekst="'Dodaj'"></forma-adresa>
+    <forma-adresa v-bind:objekat="objekatZaIzmenu" v-bind:drzave="drzave" v-bind:opstine="opstine" v-bind:mesta="mesta" v-bind:atributi="atributi" v-bind:tekst="'Izmeni'" v-on:sacuvaj="update"></forma-adresa>
+    <tabela-adresa v-bind:objekti="objekti" v-bind:atributi="atributi" v-on:uklanjanje="remove" v-on:izmena="setObjekatZaIzmenu"></tabela-adresa>
 </div>
     `,
     data() {
         return {
             objekti: [],
+            drzave : [],
+            opstine : [],
+            mesta : [],
             objekatZaIzmenu: {},
         }
     },
@@ -19,15 +22,12 @@ export default {
         },
         refreshObjekti() {
             axios.get(`api/${this.naziv}`).then((response) => {
-                this.objekti = response.data;
+                this.objekti = [response.data][0][1];
+                this.drzave = [response.data][0][2];
+                this.opstine = [response.data][0][3];
+                this.mesta = [response.data][0][4];
             });
         },
-        getForma() {
-            axios.get(`api/${this.naziv}_forma`).then((response) => {
-                this.objekti['dodatak_formi'] = response.data;
-            });
-        },
-
         create(objekat) {
             axios.post(`api/${this.naziv}`, objekat).then((response) => {
                 this.refreshObjekti();
@@ -46,6 +46,5 @@ export default {
     },
     created() {
         this.refreshObjekti();
-        this.getForma();
     }
 }

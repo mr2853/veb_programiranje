@@ -27,7 +27,7 @@ def get_drzava_view(iddrzava):
 def dodavanje_drzava_view():
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("INSERT INTO drzava_view(drzava) VALUES (%(drzava)s)", flask.request.json)
+    cursor.execute("INSERT INTO drzava(drzava) VALUES (%(drzava)s)", flask.request.json)
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
@@ -36,7 +36,7 @@ def izmeni_drzava_view(iddrzava):
     drzava_view["iddrzava"] = iddrzava
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("UPDATE drzava_view SET drzava=%(drzava)s, WHERE iddrzava=%(iddrzava)s", drzava_view)
+    cursor.execute("UPDATE drzava SET drzava=%(drzava)s, WHERE iddrzava=%(iddrzava)s", drzava_view)
     db.commit()
     cursor.execute("SELECT * FROM drzava_view WHERE iddrzava=%s", (iddrzava, ))
     drzava_view = cursor.fetchone()
@@ -45,7 +45,7 @@ def izmeni_drzava_view(iddrzava):
 def ukloni_drzava_view(iddrzava):
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("DELETE FROM drzava_view WHERE iddrzava=%s", (iddrzava, ))
+    cursor.execute("DELETE FROM drzava WHERE iddrzava=%s", (iddrzava, ))
     db.commit()
     return ""
 

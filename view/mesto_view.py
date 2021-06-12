@@ -14,7 +14,14 @@ def get_all_mesto_view():
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM mesto_view")
     mesto_view = cursor.fetchall()
-    return flask.jsonify(mesto_view)
+
+    cursor.execute("SELECT * FROM drzava_view")
+    drzave = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM opstina_view")
+    opstine = cursor.fetchall()
+
+    return {1: mesto_view, 2: drzave, 3: opstine}
 
 def get_mesto_view(idmesto):
     cursor = mysql.get_db().cursor()
@@ -27,7 +34,7 @@ def get_mesto_view(idmesto):
 def dodavanje_mesto_view():
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("INSERT INTO mesto_view(mesto, postanski_broj, idopstina) VALUES (%(mesto)s, %(postanski_broj)s, %(idopstina)s)", flask.request.json)
+    cursor.execute("INSERT INTO mesto(mesto, postanski_broj, idopstina) VALUES (%(mesto)s, %(postanski_broj)s, %(idopstina)s)", flask.request.json)
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
@@ -36,7 +43,7 @@ def izmeni_mesto_view(idmesto):
     mesto_view["idmesto"] = idmesto
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("UPDATE mesto_view SET mesto=%(mesto)s, postanski_broj=%(postanski_broj)s, idopstina=%(idopstina)s WHERE idmesto=%(idmesto)s", mesto_view)
+    cursor.execute("UPDATE mesto SET mesto=%(mesto)s, postanski_broj=%(postanski_broj)s, idopstina=%(idopstina)s WHERE idmesto=%(idmesto)s", mesto_view)
     db.commit()
     cursor.execute("SELECT * FROM mesto_view WHERE idmesto=%s", (idmesto, ))
     mesto_view = cursor.fetchone()
@@ -45,7 +52,7 @@ def izmeni_mesto_view(idmesto):
 def ukloni_mesto_view(idmesto):
     db = mysql.get_db()
     cursor = db.cursor()
-    cursor.execute("DELETE FROM mesto_view WHERE idmesto=%s", (idmesto, ))
+    cursor.execute("DELETE FROM mesto WHERE idmesto=%s", (idmesto, ))
     db.commit()
     return ""
 
