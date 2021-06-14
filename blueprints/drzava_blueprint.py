@@ -1,22 +1,20 @@
 import flask
-mysql = None
+from flask_jwt_extended import jwt_required
+from utils.db import mysql
+from flask import Blueprint
+drzava_blueprint = Blueprint("drzava_blueprint", __name__)
 
-def init(app, _mysql):
-    global mysql
-    mysql = _mysql
-    app.add_url_rule('/api/drzava_view', view_func=dodavanje_drzava_view, methods=['POST'])
-    app.add_url_rule('/api/drzava_view', view_func=get_all_drzava_view, methods=['GET'])
-    app.add_url_rule('/api/drzava_view/<int:iddrzava>', view_func=get_drzava_view, methods=['GET'])
-    app.add_url_rule('/api/drzava_view/<int:iddrzava>', view_func=izmeni_drzava_view, methods=['PUT'])
-    app.add_url_rule('/api/drzava_view/<int:iddrzava>', view_func=ukloni_drzava_view, methods=['DELETE'])
-
-def get_all_drzava_view():
+@drzava_blueprint.route("", endpoint='get_all_drzava')
+@jwt_required()
+def get_all_drzava():
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM drzava_view")
     drzava_view = cursor.fetchall()
     return flask.jsonify(drzava_view)
 
-def get_drzava_view(iddrzava):
+@drzava_blueprint.route("<int:iddrzava>", endpoint='get_drzava')
+@jwt_required()
+def get_drzava(iddrzava):
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM drzava_view WHERE iddrzava=%s", (iddrzava,))
     drzava_view = cursor.fetchone()
@@ -24,14 +22,18 @@ def get_drzava_view(iddrzava):
         return flask.jsonify(drzava_view)
     return "", 404
 
-def dodavanje_drzava_view():
+@drzava_blueprint.route("", methods=["POST"], endpoint='dodavanje_drzava')
+@jwt_required()
+def dodavanje_drzava():
     db = mysql.get_db()
     cursor = db.cursor()
     cursor.execute("INSERT INTO drzava(drzava) VALUES (%(drzava)s)", flask.request.json)
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
-def izmeni_drzava_view(iddrzava):
+@drzava_blueprint.route("<int:iddrzava>", methods=["PUT"], endpoint='izmeni_drzava')
+@jwt_required()
+def izmeni_drzava(iddrzava):
     drzava_view = dict(flask.request.json)
     drzava_view["iddrzava"] = iddrzava
     db = mysql.get_db()
@@ -42,7 +44,9 @@ def izmeni_drzava_view(iddrzava):
     drzava_view = cursor.fetchone()
     return flask.jsonify(drzava_view)
 
-def ukloni_drzava_view(iddrzava):
+@drzava_blueprint.route("<int:iddrzava>", methods=["DELETE"], endpoint='ukloni_drzava')
+@jwt_required()
+def ukloni_drzava(iddrzava):
     db = mysql.get_db()
     cursor = db.cursor()
     cursor.execute("DELETE FROM drzava WHERE iddrzava=%s", (iddrzava, ))

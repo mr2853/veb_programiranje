@@ -1,16 +1,12 @@
 import flask
-mysql = None
+from flask_jwt_extended import jwt_required
+from utils.db import mysql
+from flask import Blueprint
+opstina_blueprint = Blueprint("opstina_blueprint", __name__)
 
-def init(app, _mysql):
-    global mysql
-    mysql = _mysql
-    app.add_url_rule('/api/opstina_view', view_func=dodavanje_opstina_view, methods=['POST'])
-    app.add_url_rule('/api/opstina_view', view_func=get_all_opstina_view, methods=['GET'])
-    app.add_url_rule('/api/opstina_view/<int:idopstina>', view_func=get_opstina_view, methods=['GET'])
-    app.add_url_rule('/api/opstina_view/<int:idopstina>', view_func=izmeni_opstina_view, methods=['PUT'])
-    app.add_url_rule('/api/opstina_view/<int:idopstina>', view_func=ukloni_opstina_view, methods=['DELETE'])
-
-def get_all_opstina_view():
+@opstina_blueprint.route("", methods=["GET"], endpoint='get_all_opstina')
+@jwt_required()
+def get_all_opstina():
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM opstina_view")
     opstina_view = cursor.fetchall()
@@ -20,7 +16,9 @@ def get_all_opstina_view():
     
     return {1: opstina_view, 2: drzave}
 
-def get_opstina_view(idopstina):
+@opstina_blueprint.route("<int:idopstina>", methods=["GET"], endpoint='get_opstina')
+@jwt_required()
+def get_opstina(idopstina):
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM opstina_view WHERE idopstina=%s", (idopstina,))
     opstina_view = cursor.fetchone()
@@ -28,7 +26,9 @@ def get_opstina_view(idopstina):
         return flask.jsonify(opstina_view)
     return "", 404
 
-def dodavanje_opstina_view():
+@opstina_blueprint.route("", methods=["POST"], endpoint='dodavanje_opstina')
+@jwt_required()
+def dodavanje_opstina():
     db = mysql.get_db()
     cursor = db.cursor()
     print(flask.request.json)
@@ -36,7 +36,9 @@ def dodavanje_opstina_view():
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
-def izmeni_opstina_view(idopstina):
+@opstina_blueprint.route("<int:idopstina>", methods=["PUT"], endpoint='izmeni_opstina')
+@jwt_required()
+def izmeni_opstina(idopstina):
     opstina_view = dict(flask.request.json)
     opstina_view["idopstina"] = idopstina
     db = mysql.get_db()
@@ -47,7 +49,9 @@ def izmeni_opstina_view(idopstina):
     opstina_view = cursor.fetchone()
     return flask.jsonify(opstina_view)
 
-def ukloni_opstina_view(idopstina):
+@opstina_blueprint.route("<int:idopstina>", methods=["DELETE"], endpoint='ukloni_opstina')
+@jwt_required()
+def ukloni_opstina(idopstina):
     db = mysql.get_db()
     cursor = db.cursor()
     cursor.execute("DELETE FROM opstina WHERE idopstina=%s", (idopstina, ))

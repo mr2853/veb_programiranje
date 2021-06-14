@@ -36,7 +36,7 @@ export default {
             });
         },
         update(objekat) {
-            axios.put(`api/${this.naziv}/${objekat[this.atributi[0]]}`, objekat).then((response) => {
+            axios.put(`api/${this.naziv}/${objekat['idinvestitor']}`, objekat).then((response) => {
                 this.refreshObjekti();
             });
         },
@@ -48,5 +48,10 @@ export default {
     },
     created() {
         this.refreshObjekti();
+        
+        if(localStorage.getItem("tip_korisnika") != "administrator")
+        {
+            document.getElementById("korisnik").remove()
+        }
     }
 }

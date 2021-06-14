@@ -28,17 +28,26 @@ import TabelaInvestitor from './components/investitor/tabela_investitor.js'
 import FormaInvestitor from './components/investitor/forma_investitor.js'
 import Investitor from './components/investitor/investitor.js'
 
+import Login from './components/login/login.js'
+
+axios.interceptors.request.use(config => {
+    let token = localStorage.getItem("token");
+    Object.assign(config.headers, { "Authorization": `Bearer ${token}` });
+    return config;
+});
+
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHashHistory(),
     props: true,
     routes: [
-        {path: "/drzava_view", component: Drzava, props: { naziv:'drzava_view', atributi:['drzava']}},
-        {path: "/opstina_view", component: Opstina, props: { naziv:'opstina_view', atributi:['opstina', 'iddrzava']}},
-        {path: "/mesto_view", component: Mesto, props: { naziv:'mesto_view', atributi:['mesto', 'postanski_broj', 'idopstina']}},
-        {path: "/katastarska_opstina_view", component: KatastarskaOpstina, props: { naziv:'katastarska_opstina_view', atributi:['katastarska_opstina','idopstina']}},
-        {path: "/korisnik_view", component: Korisnik, props: { naziv:'korisnik_view', atributi:['korisnicko_ime', 'lozinka', 'tip_korisnika']}},
-        {path: "/adresa_view", component: Adresa, props: { naziv:'adresa_view', atributi:['idmesto', 'ulica', 'broj']}},
-        {path: "/investitor_view", component: Investitor, props: { naziv:'investitor_view', atributi:['ime','prezime','jmbg','broj_mobilnog','email','postanski_broj','ulica','broj']}},
+        {path: "/", component: Login},
+        {path: "/drzava", component: Drzava, props: { naziv:'drzava', atributi:['drzava']}},
+        {path: "/opstina", component: Opstina, props: { naziv:'opstina', atributi:['opstina', 'iddrzava']}},
+        {path: "/mesto", component: Mesto, props: { naziv:'mesto', atributi:['mesto', 'postanski_broj', 'idopstina']}},
+        {path: "/katastarska_opstina", component: KatastarskaOpstina, props: { naziv:'katastarska_opstina', atributi:['katastarska_opstina','idopstina']}},
+        {path: "/korisnik", component: Korisnik, props: { naziv:'korisnik', atributi:['korisnicko_ime', 'lozinka']}},
+        {path: "/adresa", component: Adresa, props: { naziv:'adresa', atributi:['idmesto', 'ulica', 'broj']}},
+        {path: "/investitor", component: Investitor, props: { naziv:'investitor', atributi:['ime','prezime','jmbg','broj_mobilnog','email','postanski_broj','ulica','broj']}},
     ], 
 });
 

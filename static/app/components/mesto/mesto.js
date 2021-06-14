@@ -32,7 +32,7 @@ export default {
             });
         },
         update(objekat) {
-            axios.put(`api/${this.naziv}/${objekat[this.atributi[0]]}`, objekat).then((response) => {
+            axios.put(`api/${this.naziv}/${objekat['idmesto']}`, objekat).then((response) => {
                 this.refreshObjekti();
             });
         },

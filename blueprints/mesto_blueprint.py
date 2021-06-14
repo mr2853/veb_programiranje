@@ -1,16 +1,12 @@
 import flask
-mysql = None
+from flask_jwt_extended import jwt_required
+from utils.db import mysql
+from flask import Blueprint
+mesto_blueprint = Blueprint("mesto_blueprint", __name__)
 
-def init(app, _mysql):
-    global mysql
-    mysql = _mysql
-    app.add_url_rule('/api/mesto_view', view_func=dodavanje_mesto_view, methods=['POST'])
-    app.add_url_rule('/api/mesto_view', view_func=get_all_mesto_view, methods=['GET'])
-    app.add_url_rule('/api/mesto_view/<int:idmesto>', view_func=get_mesto_view, methods=['GET'])
-    app.add_url_rule('/api/mesto_view/<int:idmesto>', view_func=izmeni_mesto_view, methods=['PUT'])
-    app.add_url_rule('/api/mesto_view/<int:idmesto>', view_func=ukloni_mesto_view, methods=['DELETE'])
-
-def get_all_mesto_view():
+@mesto_blueprint.route("", methods=["GET"], endpoint='get_all_mesto')
+@jwt_required()
+def get_all_mesto():
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM mesto_view")
     mesto_view = cursor.fetchall()
@@ -23,7 +19,9 @@ def get_all_mesto_view():
 
     return {1: mesto_view, 2: drzave, 3: opstine}
 
-def get_mesto_view(idmesto):
+@mesto_blueprint.route("<int:idmesto>", methods=["GET"], endpoint='get_mesto')
+@jwt_required()
+def get_mesto(idmesto):
     cursor = mysql.get_db().cursor()
     cursor.execute("SELECT * FROM mesto_view WHERE idmesto=%s", (idmesto,))
     mesto_view = cursor.fetchone()
@@ -31,14 +29,18 @@ def get_mesto_view(idmesto):
         return flask.jsonify(mesto_view)
     return "", 404
 
-def dodavanje_mesto_view():
+@mesto_blueprint.route("", methods=["POST"], endpoint='dodavanje_mesto')
+@jwt_required()
+def dodavanje_mesto():
     db = mysql.get_db()
     cursor = db.cursor()
     cursor.execute("INSERT INTO mesto(mesto, postanski_broj, idopstina) VALUES (%(mesto)s, %(postanski_broj)s, %(idopstina)s)", flask.request.json)
     db.commit()
     return flask.jsonify(flask.request.json), 201
 
-def izmeni_mesto_view(idmesto):
+@mesto_blueprint.route("<int:idmesto>", methods=["PUT"], endpoint='izmeni_mesto')
+@jwt_required()
+def izmeni_mesto(idmesto):
     mesto_view = dict(flask.request.json)
     mesto_view["idmesto"] = idmesto
     db = mysql.get_db()
@@ -49,7 +51,9 @@ def izmeni_mesto_view(idmesto):
     mesto_view = cursor.fetchone()
     return flask.jsonify(mesto_view)
 
-def ukloni_mesto_view(idmesto):
+@mesto_blueprint.route("<int:idmesto>", methods=["DELETE"], endpoint='ukloni_mesto')
+@jwt_required()
+def ukloni_mesto(idmesto):
     db = mysql.get_db()
     cursor = db.cursor()
     cursor.execute("DELETE FROM mesto WHERE idmesto=%s", (idmesto, ))

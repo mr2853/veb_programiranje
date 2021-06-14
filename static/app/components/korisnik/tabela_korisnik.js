@@ -1,5 +1,5 @@
 export default {
-    props: ["objekti", "atributi"],
+    props: ["objekti", "atributi", "tip_korisnika"],
     emits: ["izmena", "uklanjanje"],
     data() {
         this.brojac_kolone = -1
@@ -10,6 +10,7 @@ export default {
 <thead>
     <tr>
         <th v-for="naziv in atributi">{{naziv}}</th>
+        <th>Tip korisnika</th>
         <th>Akcije</th>
     </tr>
 </thead>
@@ -18,8 +19,9 @@ export default {
         <template v-for="i in atributi.length">
             <td>{{obj[atributi[i-1]]}}</td>
         </template>
+        <td>{{obj['tip_korisnika']}}</td>
         <td><button v-on:click="$emit('izmena', {...obj})">Izmeni</button><button
-                v-on:click="$emit('uklanjanje', obj[atributi[0]])">Ukloni</button></td>
+                v-on:click="$emit('uklanjanje', obj['idkorisnik'])">Ukloni</button></td>
     </tr>
 </tbody>
 </table>
