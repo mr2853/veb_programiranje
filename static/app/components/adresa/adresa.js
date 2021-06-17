@@ -2,8 +2,7 @@ export default {
     props: ["naziv", "atributi"],
     template: `
 <div>
-    <forma-adresa v-on:sacuvaj="create" v-bind:drzave="drzave" v-bind:opstine="opstine" v-bind:mesta="mesta" v-bind:atributi="atributi" v-bind:tekst="'Dodaj'"></forma-adresa>
-    <forma-adresa v-bind:objekat="objekatZaIzmenu" v-bind:drzave="drzave" v-bind:opstine="opstine" v-bind:mesta="mesta" v-bind:atributi="atributi" v-bind:tekst="'Izmeni'" v-on:sacuvaj="update"></forma-adresa>
+    <forma-adresa v-bind:objekat="objekatZaIzmenu" v-bind:drzave="drzave" v-bind:opstine="opstine" v-bind:mesta="mesta" v-bind:atributi="atributi" v-on:dodaj="create" v-on:izmeni="update" v-on:pretraga="pretraga"></forma-adresa>
     <tabela-adresa v-bind:objekti="objekti" v-bind:atributi="atributi" v-on:uklanjanje="remove" v-on:izmena="setObjekatZaIzmenu"></tabela-adresa>
 </div>
     `,
@@ -17,6 +16,11 @@ export default {
         }
     },
     methods: {
+        pretraga(objekat) {
+            axios.post(`api/${this.naziv}/pretraga`, objekat).then((response) => {
+                this.objekti = response.data
+            });
+        },
         setObjekatZaIzmenu(objekat) {
             this.objekatZaIzmenu = { ...objekat };
         },

@@ -51,6 +51,20 @@ def izmeni_mesto(idmesto):
     mesto_view = cursor.fetchone()
     return flask.jsonify(mesto_view)
 
+@mesto_blueprint.route("pretraga", endpoint='pretraga', methods=["POST"],)
+@jwt_required()
+def pretraga():
+    objekat = flask.request.json
+    tekst = "SELECT * FROM mesto_view WHERE "
+    for key, value in objekat.items():
+        tekst += "{}='{}' AND ".format(key, value)
+
+    tekst = tekst[0:-4]
+    cursor = mysql.get_db().cursor()
+    cursor.execute(tekst)
+    mesto_view = cursor.fetchall()
+    return flask.jsonify(mesto_view)
+
 @mesto_blueprint.route("<int:idmesto>", methods=["DELETE"], endpoint='ukloni_mesto')
 @jwt_required()
 def ukloni_mesto(idmesto):

@@ -60,3 +60,17 @@ def ukloni_adresa(idadresa):
     db.commit()
     return ""
 
+@adresa_blueprint.route("pretraga", endpoint='pretraga', methods=["POST"],)
+@jwt_required()
+def pretraga():
+    objekat = flask.request.json
+    tekst = "SELECT * FROM adresa_view WHERE "
+    for key, value in objekat.items():
+        tekst += "{}='{}' AND ".format(key, value)
+
+    tekst = tekst[0:-4]
+    cursor = mysql.get_db().cursor()
+    cursor.execute(tekst)
+    adresa_view = cursor.fetchall()
+    return flask.jsonify(adresa_view)
+

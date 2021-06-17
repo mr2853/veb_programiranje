@@ -33,8 +33,6 @@ app.register_blueprint(opstina_blueprint, url_prefix="/api/opstina")
 mysql.init_app(app)
 jwt = JWTManager(app)
 
-
-
 @app.route("/")
 def home():
     return app.send_static_file("index.html")

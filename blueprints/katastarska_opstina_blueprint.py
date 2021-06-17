@@ -51,6 +51,20 @@ def izmeni_katastarska_opstina(idkatastarska_opstina):
     katastarska_opstina_view = cursor.fetchone()
     return flask.jsonify(katastarska_opstina_view)
 
+@katastarska_opstina_blueprint.route("pretraga", endpoint='pretraga', methods=["POST"],)
+@jwt_required()
+def pretraga():
+    objekat = flask.request.json
+    tekst = "SELECT * FROM katastarska_opstina_view WHERE "
+    for key, value in objekat.items():
+        tekst += "{}='{}' AND ".format(key, value)
+
+    tekst = tekst[0:-4]
+    cursor = mysql.get_db().cursor()
+    cursor.execute(tekst)
+    katastarska_opstina_view = cursor.fetchall()
+    return flask.jsonify(katastarska_opstina_view)
+
 @katastarska_opstina_blueprint.route("<int:idkatastarska_opstina>", methods=["DELETE"], endpoint='ukloni_katastarska_opstina')
 @jwt_required()
 def ukloni_katastarska_opstina(idkatastarska_opstina):

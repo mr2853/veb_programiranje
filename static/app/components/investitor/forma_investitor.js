@@ -1,6 +1,6 @@
 export default {
     props: ["objekat", "drzave", "opstine", "mesta", "atributi", "tekst"],
-    emits: ["sacuvaj"],
+    emits: ["dodaj", "izmeni", "pretraga"],
     data() {
         this.drzava_id = 'drzave_'+this.tekst;
         this.opstine_id = 'opstine_'+this.tekst;
@@ -11,7 +11,11 @@ export default {
     },
     watch: {
          objekat: function(newValue, oldValue) {
-             this.noviObjekat = {...this.objekat};
+            this.noviObjekat = {...this.objekat};
+            if (Object.keys(this.noviObjekat).length !== 0)
+            {
+                document.getElementById("izmena").hidden = false
+            }
          }
     },
     methods: {
@@ -71,38 +75,43 @@ export default {
                     mesta.appendChild(opt);
                 }
             }
+        },
+        pretraga: function pretraga(){
+            this.$emit('pretraga', {...this.noviObjekat})
         }
     },
     template: `
-    <form v-on:submit.prevent="$emit('sacuvaj', {...noviObjekat})">
+    <form>
         <div v-for="atr in atributi">
             <template v-if="atr != 'idadresa'">
-                <label>{{atr}}: <input type="text" v-model="noviObjekat[atr]" required></label>
+                <label>{{atr}}: <input type="text" class="form-control" aria-label="Small" v-model="noviObjekat[atr]" required></label>
             </template>
         </div>
         <div>
             <label>Drzava:
-                <select v-bind:id="drzava_id" v-model="noviObjekat['iddrzava']" required v-on:change='nadjiOpstine(rowId, $event)'>
+                <select class="form-select" aria-label="Default select example" v-bind:id="drzava_id" v-model="noviObjekat['iddrzava']" required v-on:change='nadjiOpstine(rowId, $event)'>
                     <option v-for="obj in drzave" v-bind:value="obj.iddrzava">{{obj.drzava}}</option>
                 </select>
             </label>
         </div>
         <div>
             <label>Opstina:
-                <select v-bind:id="opstine_id" v-model="noviObjekat['idopstina']" required v-on:change='nadjiMesta(rowId, $event)'>
+                <select class="form-select" aria-label="Default select example" v-bind:id="opstine_id" v-model="noviObjekat['idopstina']" required v-on:change='nadjiMesta(rowId, $event)'>
                     <option v-for="obj in opstine" v-bind:value="obj.idopstina">{{obj.opstina}}</option>
                 </select>
             </label>
         </div>
         <div>
             <label>Mesto:
-                <select v-bind:id="mesta_id" v-model="noviObjekat['idmesto']" required>
+                <select class="form-select" aria-label="Default select example" v-bind:id="mesta_id" v-model="noviObjekat['idmesto']" required>
                     <option v-for="obj in mesta" v-bind:value="obj.idmesto">{{obj.mesto}}</option>
                 </select>
             </label>
         </div>
         <div>
-            <input type="submit" v-bind:value="tekst">
+            <input type="submit" class="btn btn-primary" v-on:click="$emit('dodaj', {...noviObjekat})" value="Dodaj">
+            <input hidden="true" id="izmena" type="submit" class="btn btn-primary" v-on:click="$emit('izmeni', {...noviObjekat})" value="Izmeni">
+            <input type="button" class="btn btn-primary" v-on:click="pretraga" value="Pretraga">
         </div>
     </form>
     `

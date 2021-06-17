@@ -25,6 +25,20 @@ def get_all_investitor():
 
     return {1: investitor_view, 2: drzave, 3: opstine, 4: mesta, 5: adrese}
 
+@investitor_blueprint.route("pretraga", endpoint='pretraga', methods=["POST"],)
+@jwt_required()
+def pretraga():
+    objekat = flask.request.json
+    tekst = "SELECT * FROM investitor_view WHERE "
+    for key, value in objekat.items():
+        tekst += "{}='{}' AND ".format(key, value)
+
+    tekst = tekst[0:-4]
+    cursor = mysql.get_db().cursor()
+    cursor.execute(tekst)
+    investitor_view = cursor.fetchall()
+    return flask.jsonify(investitor_view)
+
 @investitor_blueprint.route("<int:idinvestitor>", methods=["GET"], endpoint='get_investitor')
 @jwt_required()
 def get_investitor(idinvestitor):

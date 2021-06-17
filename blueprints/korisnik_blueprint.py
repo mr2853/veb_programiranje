@@ -24,6 +24,20 @@ def admin_required():
 
     return wrapper
 
+@korisnik_blueprint.route("pretraga", endpoint='pretraga', methods=["POST"],)
+@jwt_required()
+def pretraga():
+    objekat = flask.request.json
+    tekst = "SELECT * FROM korisnik_view WHERE "
+    for key, value in objekat.items():
+        tekst += "{}='{}' AND ".format(key, value)
+
+    tekst = tekst[0:-4]
+    cursor = mysql.get_db().cursor()
+    cursor.execute(tekst)
+    korisnik_view = cursor.fetchall()
+    return flask.jsonify(korisnik_view)
+
 @korisnik_blueprint.route("", methods=["GET"], endpoint='get_all_korisnik')
 @jwt_required()
 @admin_required()

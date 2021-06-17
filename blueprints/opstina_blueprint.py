@@ -16,6 +16,20 @@ def get_all_opstina():
     
     return {1: opstina_view, 2: drzave}
 
+@opstina_blueprint.route("pretraga", endpoint='pretraga', methods=["POST"],)
+@jwt_required()
+def pretraga():
+    objekat = flask.request.json
+    tekst = "SELECT * FROM opstina_view WHERE "
+    for key, value in objekat.items():
+        tekst += "{}='{}' AND ".format(key, value)
+
+    tekst = tekst[0:-4]
+    cursor = mysql.get_db().cursor()
+    cursor.execute(tekst)
+    opstina_view = cursor.fetchall()
+    return flask.jsonify(opstina_view)
+
 @opstina_blueprint.route("<int:idopstina>", methods=["GET"], endpoint='get_opstina')
 @jwt_required()
 def get_opstina(idopstina):
